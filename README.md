@@ -49,8 +49,8 @@ Here's a brief overview of the main components:
 4. **Set up environment variables**
     Create a `.env` file in the project root and add your Wolfram Alpha and OpenAI API keys:
     ```env
-    WOLFRAM_API_KEY=your_wolfram_alpha_api_key_here
-    OPENAI_API_KEY=your_openai_api_key_here
+    AppID=your_wolfram_alpha_appid_here
+    OpenAI Key=your_openai_api_key_here
     ```
 
 5. **Run the bot**

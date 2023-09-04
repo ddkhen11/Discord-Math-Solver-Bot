@@ -1,0 +1,6 @@
+Pillow
+requests
+replit
+flask
+discord.py
+openai

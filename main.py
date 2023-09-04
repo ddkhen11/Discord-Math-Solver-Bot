@@ -1,40 +1,17 @@
 import discord
 import os
-import requests
-import json
-import random
+from io import BytesIO
 from replit import db
 from keep_alive import keep_alive
+from get_result import get_result
+from result_to_latex import result_to_latex
+from latex_to_image import latex_to_image
 
 token = os.environ['TOKEN']
 
 intents = discord.Intents.default()
 intents.message_content = True
 client = discord.Client(intents=intents)
-
-def get_result(query):
-  app_id = os.environ['AppID']
-  base_url = "http://api.wolframalpha.com/v1/result"
-  params = {
-      "i": query,
-      "appid": app_id,
-  }
-    
-  response = requests.get(base_url, params=params)
-    
-  if response.status_code == 200:
-    try:
-      return response.text
-    except Exception as e:
-      print(f"An unexpected error occurred: {e}")
-      return f"Error: Received status code {response.status_code}"
-  elif response.status_code == 501:
-    return "The input value cannot be interpreted by the API."
-  elif response.status_code == 400:
-    return "The API did not find an input parameter while parsing."
-  else:
-    print(f"Received unexpected status code {response.status_code}: {response.text}")
-    return f"Error: Received status code {response.status_code}"
 
 @client.event
 async def on_ready():
@@ -59,7 +36,13 @@ async def on_message(message):
       if msg.startswith('!solve'):
         query = msg.split("!solve ", 1)[1]
         print(f"Query to be solved: {query}")
-        await message.channel.send(get_result(query))
+        result = get_result(query)
+        if db["Proper Result"] == True:
+          latex_code = result_to_latex(result)
+          image_data = latex_to_image(latex_code)
+          await message.channel.send(file=discord.File(fp=BytesIO(image_data), filename='image.png'))
+        else:
+          await message.channel.send(result)
         
 keep_alive()
 
